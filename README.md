@@ -46,7 +46,9 @@ Para garantizar la calidad de la atención y no enviar respuestas automáticas a
 ## 📂 Archivos y Enlaces de la Entrega
 
 | **Blueprint n8n** | https://prnt.sc/2rVDAhlJ_q_M | Archivo `.json` exportado para importar el flujo tal cual en n8n. |
+
 | **Base de Datos** | https://airtable.com/invite/l?inviteId=invCa93E74q7fps9L&inviteToken=396c816d73e65328a4de6d6ffe3471949d44c0da660024708365e8912011a27f&utm_medium=email&utm_source=product_team&utm_content=transactional-alerts | Vista de lectura pública de la tabla de leads. |
+
 | **Video Demo** (https://youtu.be/btTCvRteU-8) | Grabación de pantalla mostrando la ejecución del flujo en tiempo real. |
 
 ---
