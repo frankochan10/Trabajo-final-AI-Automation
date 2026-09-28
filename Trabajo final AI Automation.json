@@ -1,0 +1,342 @@
+{
+  "name": "Trabajo final AI Automation",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "authentication": "airtableOAuth2Api",
+        "baseId": {
+          "__rl": true,
+          "value": "https://airtable.com/appjR20YFqUApev5G/tblDnFEveqJLZhx05/viwjqfTjHDsl1dGb1?blocks=hide",
+          "mode": "url"
+        },
+        "tableId": {
+          "__rl": true,
+          "value": "https://airtable.com/appjR20YFqUApev5G/tblDnFEveqJLZhx05/viwjqfTjHDsl1dGb1?blocks=hide",
+          "mode": "url"
+        },
+        "triggerField": "Fecha_creacion",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.airtableTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "0f5d5bd7-5b87-4d42-96a0-fe1b99fc6661",
+      "name": "Airtable Trigger",
+      "credentials": {
+        "airtableOAuth2Api": {
+          "id": "loiTvTydsne0t6pv",
+          "name": "Airtable account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "responses": {
+          "values": [
+            {
+              "content": "=Sos un analista de ventas B2B experto. Evalúa la siguiente información del lead y genera una calificación.\n\nDatos del Lead:\n- ID: {{ $json.id }}\n- Fecha de creación: {{ $json.fields.Fecha_creacion }}\n- Nombre / Contacto: {{ $json.fields.Nombre || \"No especificado\" }}\n- Empresa: {{ $json.fields.Empresa || \"No especificado\" }}\n- Necesidad / Mensaje: {{ $json.fields.Mensaje || \"No especificado\" }}\n\nCriterios de evaluación:\n1. Puntuación (Score): Asigna una nota de 1 a 100 según el interés y potencial B2B.\n2. Prioridad: Clasifícalo como ALTA, MEDIA o BAJA.\n3. Resumen y Propuesta: Escribe 2 oraciones sugiriendo el siguiente paso de venta.\n\nDevuelve la respuesta en formato estructurado."
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.3,
+      "position": [
+        224,
+        0
+      ],
+      "id": "d26f9383-fc1e-495d-b17b-d061d271d78c",
+      "name": "Message a model",
+      "credentials": {
+        "openAiApi": {
+          "id": null,
+          "name": "",
+          "__aiGatewayManaged": true
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "authentication": "airtableOAuth2Api",
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "value": "https://airtable.com/appjR20YFqUApev5G/tblDnFEveqJLZhx05/viwjqfTjHDsl1dGb1?blocks=hide",
+          "mode": "url"
+        },
+        "table": {
+          "__rl": true,
+          "value": "https://airtable.com/appjR20YFqUApev5G/tblDnFEveqJLZhx05/viwjqfTjHDsl1dGb1?blocks=hide",
+          "mode": "url"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $('Airtable Trigger').item.json.id }}",
+            "Propuesta_IA": "={{ $json.output[0].content[0].text }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "Nombre",
+              "displayName": "Nombre",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "PENDIENTE",
+                  "value": "PENDIENTE"
+                },
+                {
+                  "name": "PROCESADO POR IA",
+                  "value": "PROCESADO POR IA"
+                },
+                {
+                  "name": "APROBADO POR HUMANO",
+                  "value": "APROBADO POR HUMANO"
+                },
+                {
+                  "name": "RECHAZADO",
+                  "value": "RECHAZADO"
+                },
+                {
+                  "name": "ERROR",
+                  "value": "ERROR"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Empresa",
+              "displayName": "Empresa",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Descripcion_necesidad",
+              "displayName": "Descripcion_necesidad",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Presupuesto_estimado",
+              "displayName": "Presupuesto_estimado",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Score_IA",
+              "displayName": "Score_IA",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Propuesta_IA",
+              "displayName": "Propuesta_IA",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Servicios_interes",
+              "displayName": "Servicios_interes",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "array",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Fecha_creacion",
+              "displayName": "Fecha_creacion",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        592,
+        0
+      ],
+      "id": "7be8bd90-fbae-42bd-a74e-ca4d81039b6a",
+      "name": "Update record",
+      "credentials": {
+        "airtableOAuth2Api": {
+          "id": "loiTvTydsne0t6pv",
+          "name": "Airtable account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "kochanfrancisco@gmail.com",
+        "subject": "Nuevo Lead Calificado por IA",
+        "message": "={{ $json.fields.Propuesta_IA }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        816,
+        0
+      ],
+      "id": "7b30b4ca-b421-4951-bfc2-321f21f023bd",
+      "name": "Send a message",
+      "webhookId": "7d807a7b-3646-456e-aced-05af52a93823",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "YW2hmAZZ1YEgukKf",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Airtable Trigger": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Update record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update record": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "c9034c47-e76c-46e3-a1b6-560ca3fade30",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "a43151b2644849ace2fb10f3e47a05d3021d132a93de9ccb70883fa829311fa0"
+  },
+  "nodeGroups": [],
+  "id": "Iat2kBdCTqggF3ah",
+  "tags": []
+}
